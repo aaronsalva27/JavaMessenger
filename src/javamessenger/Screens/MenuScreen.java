@@ -8,9 +8,10 @@ package javamessenger.Screens;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import utils.ClientSocket;
+
 
 /**
  *
@@ -173,7 +174,10 @@ public class MenuScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
-       client.send("Putita");
+        JSONObject obj = new JSONObject();
+        obj.put("name", "sava");
+        obj.put("message", "putita");
+        client.send(obj);
         
     }//GEN-LAST:event_btnTestActionPerformed
 

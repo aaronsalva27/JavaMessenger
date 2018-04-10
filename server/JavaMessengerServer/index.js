@@ -16,7 +16,8 @@ net.createServer ((sock) =>{
 
     sock.on('data', (data)=> {
         console.log(sock.remoteAddress + ":" + sock.remotePort )
-        console.log(data.toString())
+        let message = JSON.parse(data.toString())
+        console.log(message["message"])
 
         sock.write('Echo server\r\n');
     })

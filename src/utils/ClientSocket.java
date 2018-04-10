@@ -81,7 +81,7 @@ public class ClientSocket {
     }
     
     
-    public void send(String data) {
+    public<T> void send(T data) {
         out.println(data);
     }
             
