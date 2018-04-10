@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 
@@ -132,7 +135,11 @@ public class LoginScreen extends javax.swing.JFrame {
                             tfPuerto.getText());
         
         if(isValid) 
-            new MenuScreen().setVisible(true);
+            try {
+                new MenuScreen().setVisible(true);
+            } catch (IOException ex) {
+                Logger.getLogger(LoginScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
         else    
             System.out.println("NO");
         

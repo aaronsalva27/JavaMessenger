@@ -1,4 +1,4 @@
-const client = require("./clients");
+const Client = require("./clients");
 
 
 var net = require('net');
@@ -11,7 +11,7 @@ net.createServer ((sock) =>{
 
     console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
 
-    var newclient = Client(sock.remoteAddress, sock.remotePort)
+    var newclient = new Client(sock.remoteAddress, sock.remotePort)
     clients.push(newclient)
 
     sock.on('data', (data)=> {
@@ -19,9 +19,11 @@ net.createServer ((sock) =>{
         console.log(data.toString())
 
         sock.write('Echo server\r\n');
-        
-
     })
+
+    sock.on('close', function() {
+        console.log('Connection closed');
+    });
     
 }).listen(PORT, HOST);
 
