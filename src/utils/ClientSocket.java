@@ -18,10 +18,17 @@ import org.json.simple.JSONObject;
 public class ClientSocket {
     private String host;
     private Integer port;
+    private String userName;
+    
     private Socket socket;
+    private long timeOutMilis = 5000;
+    
     private BufferedReader in;
     private PrintWriter out;
-    private String userName;
+
+    private boolean tryToReconnect = true;
+    private boolean isExit = false;
+    private Thread mainThread;
     
     public ClientSocket(String host, Integer port, String userName) throws IOException {
         this.host = host;
@@ -50,41 +57,58 @@ public class ClientSocket {
     }
     
     public void connect() throws IOException {
-        try {
-            socket = new Socket(host, port);
+ 
+        while (tryToReconnect) {
+            System.out.println("Trying to connect...");
+            try {
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(host,port ));
+                
+                if (socket.isConnected()) {
+                    tryToReconnect = false;               
+                }
 
-            in = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
+                in = new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(socket.getOutputStream(), true);
 
-            // out.println("Hola");
-            JSONObject obj = new JSONObject();
-            obj.put("name", this.userName);
-            obj.put("message", "connected");
-            out.println(obj);
-            
-            System.out.println(in.readLine() + "\n");
+                // out.println("Hola");
+                JSONObject obj = new JSONObject();
+                obj.put("name", this.userName);
+                obj.put("message", "connected");
+                out.println(obj);
 
-        } catch (IOException ex) {
-            Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(in.readLine() + "\n");
+
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
         }
+        
     }
     
-    public void listen() throws IOException {
-        
-        
-        new Thread(() -> {
+    public void listen() throws IOException {      
+        mainThread = new Thread(() -> {
             String response;
-            
             try {
                 while (true) {
                    response = in.readLine();
                    System.out.println(response);
                 }
             } catch (IOException ex) {
-                Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Socket disconected");
+                try {
+                    if(!isExit){
+                        tryToReconnect = true;
+                        this.connect();
+                    } 
+                } catch (IOException ex1) {
+                    Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex1);
+                }
             } 
-        }).start();
+        });
+        mainThread.start();
+           
     }
     
     
@@ -92,9 +116,25 @@ public class ClientSocket {
         out.println(data);
     }
             
+    public boolean isConnected() {
+        return socket.isConnected();
+    }
     
     public void close() throws IOException {
-        socket.close();
+        System.out.println("Exit connection");
+        
+        try {
+            out.close();
+        }finally {
+            try {
+                in.close();
+            } finally {
+                isExit = true;
+                mainThread.interrupt();
+                socket.close();
+
+            }
+        }
     }
             
     

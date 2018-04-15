@@ -26,12 +26,20 @@ public class MenuScreen extends javax.swing.JFrame {
     
     public MenuScreen(String name, String host, int port) throws IOException {
         initComponents();
+        System.out.println("MenuScreen init");
          // Set JFrame to the center of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         this.userName = name;
         lbName.setText(this.userName);
-        client = new ClientSocket(host, port,userName);
+        
+        
+        this.setUpConexion(name, host,port);
+        
+    }
+    
+    public void setUpConexion(String name, String host, int port) throws IOException {
+        client = new ClientSocket(host, port, name);
         client.connect();
         client.listen();
     }
@@ -152,7 +160,7 @@ public class MenuScreen extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(77, 77, 77)
+                .addGap(61, 61, 61)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))

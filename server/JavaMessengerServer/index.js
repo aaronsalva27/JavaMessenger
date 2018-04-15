@@ -23,6 +23,13 @@ net.createServer ((sock) =>{
     sock.on('close', function() {
         console.log('Connection closed');
     });
+
+    sock.on("error", (err) => {
+        console.log("Caught flash policy server socket error: ")
+        console.log(err.stack)
+    }
+    
+  )
     
 }).listen(PORT, HOST);
 
