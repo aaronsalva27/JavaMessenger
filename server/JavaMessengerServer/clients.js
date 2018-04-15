@@ -1,11 +1,14 @@
 class Client {
-    constructor (ip, port) {
+    constructor (ip, port, name) {
         this.ip = ip ;
         this.port = port ;
+        this.name = name;
     }
 
     toString() {
-        return "IP: "+ ip + " - " + "PORT: " + this.port
+        return "Name:" + this.name + " - " + 
+                " IP: "+ this.ip + " - " + 
+                "PORT: " + this.port
     }
 
 }

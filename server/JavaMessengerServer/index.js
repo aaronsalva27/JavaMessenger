@@ -1,8 +1,6 @@
 const Client = require("./clients");
 const colors = require('colors/safe'); 
 
-
-
 var net = require('net');
 var HOST = '127.0.0.1'; // parameterize the IP of the Listen var PORT = 6969; // TCP LISTEN port
 var PORT = 6969; // TCP LISTEN port
@@ -28,17 +26,17 @@ net.createServer ((sock) =>{
         console.log('Connection closed');
     });
 
-    sock.on('connect',function() {
-        sock.emit('test',{msg : 'did you get it ?'});
-    });
-
-
+    sock.on("error", (err) => {
+        console.log("Caught flash policy server socket error: ")
+        console.log(err.stack)
+    }
+    
+  )
     
 }).listen(PORT, HOST);
 
 
 /*Functions Utils*/
-
 function printMessage(data, sock){
     console.log(colors.green(data.name)+
     " at: "+colors.red(sock.remoteAddress + ":" + sock.remotePort)+
