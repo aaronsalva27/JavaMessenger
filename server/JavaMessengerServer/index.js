@@ -16,7 +16,7 @@ net.createServer ((sock) =>{
     
     sock.on('data', (data)=> {
         let message = JSON.parse(data.toString('utf8'))
-        printMessage(message ,sock)
+        manageMessage(data,printMessage(message ,sock));
         sock.write('Echo server\r\n');
     })
 
@@ -34,13 +34,35 @@ net.createServer ((sock) =>{
     
 }).listen(PORT, HOST);
 
+/////// Message Model ///////
+/*
+type [MESSAGE, ERROR , ACTION]
+owner
+data
+reciever?
+message
+ip
+port
+room?
+
+*/
+
+
+function manageMessage(data ,callback) {
+
+    console.log(data.toString('utf8'))
+
+    if(callback) {
+        callback();
+    }
+}
 
 /*Functions Utils*/
 function printMessage(data, sock){
-    console.log(colors.green(data.name)+
+    console.log(colors.green(data.owner)+
     " at: "+colors.red(sock.remoteAddress + ":" + sock.remotePort)+
     " to: "+colors.rainbow(data.to)+
-    " send => "+colors.yellow(data.message))
+    " send => "+colors.yellow(data.data))
 }
 
 

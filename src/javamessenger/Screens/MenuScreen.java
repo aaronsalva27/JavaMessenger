@@ -24,6 +24,7 @@ import utils.SoketMessages;
  */
 public class MenuScreen extends javax.swing.JFrame {
     private SocketFactory sf;
+    private ClientSocket cf;
 
     
     public MenuScreen(String name, String host, int port) throws IOException {

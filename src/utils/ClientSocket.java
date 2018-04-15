@@ -55,7 +55,7 @@ public class ClientSocket {
                 socket.connect(new InetSocketAddress(c.getHost(),c.getPort()));
                 
                 if (socket.isConnected()) {
-                    tryToReconnect = false;               
+                    tryToReconnect = false;
                 }
 
                 in = new BufferedReader(
@@ -64,8 +64,8 @@ public class ClientSocket {
 
             JSONObject obj = new JSONObject();
              
-            obj.put("name", c.getName());
-            obj.put("message", "connected");
+            obj.put("owner", c.getName());
+            obj.put("data", "connected");
             obj.put("from", c.getHost().toString());
             obj.put("to", "SERVER");                //To the chat group??
 
@@ -80,6 +80,7 @@ public class ClientSocket {
                 System.out.println(ex.getMessage());
             }
         }
+        tryToReconnect = true;
         
     }
     
@@ -87,7 +88,7 @@ public class ClientSocket {
         mainThread = new Thread(() -> {
             String response;
             try {
-                while (true) {
+                while (socket.isConnected()) {
                     response = in.readLine();
                     System.out.println("[received]: "+response);
                 }
@@ -108,6 +109,7 @@ public class ClientSocket {
     }
 
     public <T> void send(T data) {
+        System.out.println("is Conected: "+ socket.isConnected());
         out.println(data);
     }
             
