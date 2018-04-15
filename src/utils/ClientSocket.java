@@ -5,6 +5,7 @@
  */
 package utils;
 
+import Models.Client;
 import java.io.*;
 import java.net.*;
 import java.util.logging.Level;
@@ -16,9 +17,8 @@ import org.json.simple.JSONObject;
  * @author aaron
  */
 public class ClientSocket {
-    private String host;
-    private Integer port;
-    private String userName;
+
+    private Client c;
     
     private Socket socket;
     private long timeOutMilis = 5000;
@@ -30,39 +30,29 @@ public class ClientSocket {
     private boolean isExit = false;
     private Thread mainThread;
     
-    public ClientSocket(String host, Integer port, String userName) throws IOException {
-        this.host = host;
-        this.port = port;
-        this.userName = userName;
+    public ClientSocket(Client c) throws IOException {
+        this.c = c;
     }
 
     public Socket getSocket() {
         return socket;
     }
     
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
+    public Client getClient() {
+        return c;
     }
     
+    public void setClient(Client c) {
+        this.c = c;
+    }
+
     public void connect() throws IOException {
  
         while (tryToReconnect) {
             System.out.println("Trying to connect...");
             try {
                 socket = new Socket();
-                socket.connect(new InetSocketAddress(host,port ));
+                socket.connect(new InetSocketAddress(c.getHost(),c.getPort()));
                 
                 if (socket.isConnected()) {
                     tryToReconnect = false;               
@@ -72,13 +62,19 @@ public class ClientSocket {
                         new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                // out.println("Hola");
-                JSONObject obj = new JSONObject();
-                obj.put("name", this.userName);
-                obj.put("message", "connected");
-                out.println(obj);
+            JSONObject obj = new JSONObject();
+             
+            obj.put("name", c.getName());
+            obj.put("message", "connected");
+            obj.put("from", c.getHost().toString());
+            obj.put("to", "SERVER");                //To the chat group??
 
-                System.out.println(in.readLine() + "\n");
+
+            out.println(obj.toString());
+        
+            if (in != null) {
+                System.out.println("[received] "+in.readLine() + "\n");
+            }
 
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
@@ -92,8 +88,8 @@ public class ClientSocket {
             String response;
             try {
                 while (true) {
-                   response = in.readLine();
-                   System.out.println(response);
+                    response = in.readLine();
+                    System.out.println("[received]: "+response);
                 }
             } catch (IOException ex) {
                 System.out.println("Socket disconected");
@@ -110,9 +106,8 @@ public class ClientSocket {
         mainThread.start();
            
     }
-    
-    
-    public<T> void send(T data) {
+
+    public <T> void send(T data) {
         out.println(data);
     }
             
@@ -132,13 +127,8 @@ public class ClientSocket {
                 isExit = true;
                 mainThread.interrupt();
                 socket.close();
-
             }
         }
     }
-            
-    
-    
-    
     
 }

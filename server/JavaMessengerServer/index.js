@@ -13,14 +13,15 @@ net.createServer ((sock) =>{
 
     var newclient = new Client(sock.remoteAddress, sock.remotePort)
     clients.push(newclient)
-
+    
     sock.on('data', (data)=> {
         let message = JSON.parse(data.toString('utf8'))
         printMessage(message ,sock)
         sock.write('Echo server\r\n');
     })
 
-    sock.on('close', function() {
+    sock.on('close', function(data) {
+        console.log(data)
         console.log('Connection closed');
     });
 
@@ -38,6 +39,7 @@ net.createServer ((sock) =>{
 function printMessage(data, sock){
     console.log(colors.green(data.name)+
     " at: "+colors.red(sock.remoteAddress + ":" + sock.remotePort)+
+    " to: "+colors.rainbow(data.to)+
     " send => "+colors.yellow(data.message))
 }
 
