@@ -19,7 +19,6 @@ import utils.SoketMessages;
  * @author aaron
  */
 public class ChatScreen extends javax.swing.JFrame {
-
     /**
      * Creates new form ChatScreen
      */
@@ -29,7 +28,12 @@ public class ChatScreen extends javax.swing.JFrame {
          // Set JFrame to the center of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
+        try {
+            //informar server cambio de chat1 de este usuario
+            SocketFactory.getSocketUtil().setChat("chat1");
+        } catch (IOException ex) {
+            Logger.getLogger(ChatScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
 
@@ -44,6 +48,7 @@ public class ChatScreen extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        txtChat1.setEditable(false);
         jScrollPane1.setViewportView(txtChat1);
 
         btnSend.setText("Enviar");
@@ -83,13 +88,15 @@ public class ChatScreen extends javax.swing.JFrame {
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         
         JSONObject obj = new JSONObject();
+        String msg = tfMessage.getText();
         try {
             obj.put("name",SocketFactory.getSocketUtil().getClient().getName());
-            appendMsg("chat1", SocketFactory.getSocketUtil().getClient().getName(), "mensaje para el rey");
+            appendMsg("chat1", SocketFactory.getSocketUtil().getClient().getName(),msg );
+            tfMessage.setText("");
         } catch (IOException ex) {
             Logger.getLogger(MenuScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
-        obj.put("message", tfMessage.getText());
+        obj.put("message", msg);
         obj.put("to", "chat1");
         try {
             SocketFactory.getSocketUtil().send(obj);
