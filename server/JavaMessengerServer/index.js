@@ -6,18 +6,20 @@ var HOST = '127.0.0.1'; // parameterize the IP of the Listen var PORT = 6969; //
 var PORT = 6969; // TCP LISTEN port
 
 var clients = []
+var sockets = [];
+
 
 net.createServer ((sock) =>{
 
     console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
 
-    var newclient = new Client(sock.remoteAddress, sock.remotePort)
-    clients.push(newclient)
+    var newclient = new Client(sock.remoteAddress, sock.remotePort, sock, null)
+    clients[sock.id] = newclient;
     
     sock.on('data', (data)=> {
         let message = JSON.parse(data.toString('utf8'))
         printMessage(message ,sock)
-        sock.write('Echo server\r\n');
+        sock.write('server ok\r\n');
     })
 
     sock.on('close', function(data) {
@@ -28,9 +30,7 @@ net.createServer ((sock) =>{
     sock.on("error", (err) => {
         console.log("Caught flash policy server socket error: ")
         console.log(err.stack)
-    }
-    
-  )
+    });
     
 }).listen(PORT, HOST);
 
@@ -40,7 +40,7 @@ function printMessage(data, sock){
     console.log(colors.green(data.name)+
     " at: "+colors.red(sock.remoteAddress + ":" + sock.remotePort)+
     " to: "+colors.rainbow(data.to)+
-    " send => "+colors.yellow(data.message))
+    " send => "+colors.yellow(data.message));
 }
 
 
