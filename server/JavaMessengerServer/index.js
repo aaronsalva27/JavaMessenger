@@ -1,4 +1,6 @@
 const Client = require("./clients");
+const colors = require('colors/safe'); 
+
 
 
 var net = require('net');
@@ -15,10 +17,8 @@ net.createServer ((sock) =>{
     clients.push(newclient)
 
     sock.on('data', (data)=> {
-        console.log(sock.remoteAddress + ":" + sock.remotePort )
-        let message = JSON.parse(data.toString())
-        console.log(message["message"])
-
+        let message = JSON.parse(data.toString('utf8'))
+        printMessage(message ,sock)
         sock.write('Echo server\r\n');
     })
 
@@ -27,6 +27,15 @@ net.createServer ((sock) =>{
     });
     
 }).listen(PORT, HOST);
+
+
+/*Functions Utils*/
+
+function printMessage(data, sock){
+    console.log(colors.green(data.name)+
+    " at: "+colors.red(sock.remoteAddress + ":" + sock.remotePort)+
+    " send => "+colors.yellow(data.message))
+}
 
 
 console.log('Server listening on ' + HOST +':'+ PORT);
