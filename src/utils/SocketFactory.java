@@ -23,6 +23,10 @@ public class SocketFactory {
         clientUtil = c;
     }
     
+    public static void setSocketUtil(ClientSocket cs ) {
+        socketUtil = cs;
+    }
+    
     public static ClientSocket getSocketUtil() throws IOException {
         if (socketUtil == null) {
             socketUtil = new ClientSocket(clientUtil);

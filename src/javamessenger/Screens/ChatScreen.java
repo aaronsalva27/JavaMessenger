@@ -5,9 +5,11 @@
  */
 package javamessenger.Screens;
 
+import Models.Message;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONObject;
@@ -46,7 +48,7 @@ public class ChatScreen extends javax.swing.JFrame {
         tfMessage = new javax.swing.JTextField();
         btnSend = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         txtChat1.setEditable(false);
         jScrollPane1.setViewportView(txtChat1);
@@ -86,23 +88,25 @@ public class ChatScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        
-        JSONObject obj = new JSONObject();
+        JSONObject obj;
         String msg = tfMessage.getText();
-        try {
-            obj.put("name",SocketFactory.getSocketUtil().getClient().getName());
-            appendMsg("chat1", SocketFactory.getSocketUtil().getClient().getName(),msg );
+        try {          
+            obj = new Message(SocketFactory.getSocketUtil().getClient().getName(), 
+                    SocketFactory.getSocketUtil().getClient().getHost(), 
+                    tfMessage.getText(),
+                    Message.Type.MESSAGE,
+                    SocketFactory.getSocketUtil().getClient().getHost(),
+                    LocalDateTime.now(), 
+                    "room 1").generateMessage();
+            
+            appendMsg("chat1", SocketFactory.getSocketUtil().getClient().getName(), msg);
             tfMessage.setText("");
-        } catch (IOException ex) {
-            Logger.getLogger(MenuScreen.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        obj.put("message", msg);
-        obj.put("to", "chat1");
-        try {
             SocketFactory.getSocketUtil().send(obj);
         } catch (IOException ex) {
            System.out.println(SoketMessages.ERROR_SEND);
         }
+        
+        
     }//GEN-LAST:event_btnSendActionPerformed
 
     private void appendMsg (String chat, String clientName, String msg){

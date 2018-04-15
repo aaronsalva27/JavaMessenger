@@ -62,12 +62,12 @@ public class ClientSocket {
                         new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                JSONObject obj = new JSONObject();
-
-                obj.put("name", c.getName());
-                obj.put("message", "connected");
-                obj.put("from", c.getHost().toString());
-                obj.put("to", "SERVER");                //To the chat group??
+            JSONObject obj = new JSONObject();
+             
+            obj.put("owner", c.getName());
+            obj.put("data", "connected");
+            obj.put("from", c.getHost().toString());
+            obj.put("to", "SERVER");                //To the chat group??
 
                 out.println(obj.toString());
 
@@ -79,14 +79,15 @@ public class ClientSocket {
                 System.out.println(ex.getMessage());
             }
         }
-
+        tryToReconnect = true;
+        
     }
 
     public void listen() throws IOException {
         mainThread = new Thread(() -> {
             String response;
             try {
-                while (true) {
+                while (socket.isConnected()) {
                     response = in.readLine();
                     System.out.println("[received]: " + response);
                 }
@@ -107,6 +108,7 @@ public class ClientSocket {
     }
 
     public <T> void send(T data) {
+        System.out.println("is Conected: "+ socket.isConnected());
         out.println(data);
     }
 
