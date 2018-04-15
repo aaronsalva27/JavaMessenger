@@ -45,10 +45,15 @@ public class LoginScreen extends javax.swing.JFrame {
             }
         });
 
+        tfName.setText("Savita");
+
         lbName.setText("Username: ");
+
+        tfHost.setText("127.0.0.1");
 
         lbHost.setText("Host: ");
 
+        tfPuerto.setText("6969");
         tfPuerto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 tfPuertoKeyTyped(evt);
@@ -136,7 +141,7 @@ public class LoginScreen extends javax.swing.JFrame {
         
         if(isValid) 
             try {
-                new MenuScreen().setVisible(true);
+                new MenuScreen(tfName.getText(), tfHost.getText(), Integer.parseInt(tfPuerto.getText())).setVisible(true);
             } catch (IOException ex) {
                 Logger.getLogger(LoginScreen.class.getName()).log(Level.SEVERE, null, ex);
             }

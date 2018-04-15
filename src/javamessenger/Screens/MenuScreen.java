@@ -8,6 +8,8 @@ package javamessenger.Screens;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import utils.ClientSocket;
@@ -20,13 +22,16 @@ import utils.ClientSocket;
 public class MenuScreen extends javax.swing.JFrame {
 
     private ClientSocket client;
+    private String userName;
     
-    public MenuScreen() throws IOException {
+    public MenuScreen(String name, String host, int port) throws IOException {
         initComponents();
          // Set JFrame to the center of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        client = new ClientSocket("127.0.0.1", 6969);
+        this.userName = name;
+        lbName.setText(this.userName);
+        client = new ClientSocket(host, port,userName);
         client.connect();
         client.listen();
     }
@@ -46,6 +51,11 @@ public class MenuScreen extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(204, 0, 51));
 
@@ -175,11 +185,19 @@ public class MenuScreen extends javax.swing.JFrame {
 
     private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
         JSONObject obj = new JSONObject();
-        obj.put("name", "sava");
+        obj.put("name", this.userName);
         obj.put("message", "putita");
         client.send(obj);
         
     }//GEN-LAST:event_btnTestActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            client.close();
+        } catch (IOException ex) {
+            Logger.getLogger(MenuScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

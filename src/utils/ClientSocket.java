@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -20,10 +21,12 @@ public class ClientSocket {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    private String userName;
     
-    public ClientSocket(String host, Integer port) throws IOException {
+    public ClientSocket(String host, Integer port, String userName) throws IOException {
         this.host = host;
         this.port = port;
+        this.userName = userName;
     }
 
     public Socket getSocket() {
@@ -54,7 +57,11 @@ public class ClientSocket {
                     new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
-            out.println("Hola");
+            // out.println("Hola");
+            JSONObject obj = new JSONObject();
+            obj.put("name", this.userName);
+            obj.put("message", "connected");
+            out.println(obj);
             
             System.out.println(in.readLine() + "\n");
 
