@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
+import utils.NameGenerator;
 
 public class LoginScreen extends javax.swing.JFrame {
 
@@ -20,7 +21,9 @@ public class LoginScreen extends javax.swing.JFrame {
         // Set JFrame to the center of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
- 
+        tfName.setText(NameGenerator.generateName());   //Generate random name Clas in utils
+        tfHost.setText("127.0.0.1");                    //Host server
+        tfPuerto.setText("6969");                       //Port listening server
         
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -130,13 +133,12 @@ public class LoginScreen extends javax.swing.JFrame {
             tfPuerto.setBackground(Color.GREEN);
         }
         
-        System.out.println(tfName.getText() + " - " +
-                            tfHost.getText()+ " - " +
-                            tfPuerto.getText());
-        
+        System.out.println("[clientName] "+tfName.getText() + " - " +
+                           "[host] "+ tfHost.getText()+ " - " +
+                           "[port] "+tfPuerto.getText());
         if(isValid) 
             try {
-                new MenuScreen().setVisible(true);
+                new MenuScreen(tfName.getText(),tfHost.getText(),tfPuerto.getText()).setVisible(true);
             } catch (IOException ex) {
                 Logger.getLogger(LoginScreen.class.getName()).log(Level.SEVERE, null, ex);
             }

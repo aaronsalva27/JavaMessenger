@@ -17,7 +17,7 @@ public class JavaMessenger {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Hola putita");
+        System.out.println("init");
         new LoginScreen().setVisible(true);
     }
     
