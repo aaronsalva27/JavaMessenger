@@ -135,8 +135,8 @@ public class ClientSocket {
     /*Set the current chat, info to server*/
     public void setChat(String chat) {
         JSONObject obj = new JSONObject();
-        obj.put("name", c.getName());
-        obj.put("message", "chat1");
+        obj.put("owner", c.getName());
+        obj.put("data", "chat1");
         obj.put("from", c.getHost().toString());
         obj.put("to", "SERVER");
          try {
