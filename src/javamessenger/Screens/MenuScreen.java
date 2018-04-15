@@ -32,8 +32,7 @@ public class MenuScreen extends javax.swing.JFrame {
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         this.userName = name;
         lbName.setText(this.userName);
-        
-        
+           
         this.setUpConexion(name, host,port);
         
     }
