@@ -8,9 +8,11 @@
             <file>file:/home/davrami/MEGAsync/DAM/JavaCryptoSocket/JavaMessenger/src/javamessenger/Screens/ChatScreen.java</file>
             <file>file:/home/davrami/MEGAsync/DAM/JavaCryptoSocket/JavaMessenger/src/utils/NameGenerator.java</file>
             <file>file:/home/davrami/MEGAsync/DAM/JavaCryptoSocket/JavaMessenger/src/utils/SocketFactory.java</file>
+            <file>file:/home/davrami/MEGAsync/DAM/JavaCryptoSocket/JavaMessenger/src/Models/Message.java</file>
             <file>file:/home/davrami/MEGAsync/DAM/JavaCryptoSocket/JavaMessenger/src/utils/ClientSocket.java</file>
             <file>file:/home/davrami/MEGAsync/DAM/JavaCryptoSocket/JavaMessenger/src/javamessenger/Screens/MenuScreen.java</file>
             <file>file:/home/davrami/MEGAsync/DAM/JavaCryptoSocket/JavaMessenger/src/javamessenger/JavaMessenger.java</file>
+            <file>file:/home/davrami/MEGAsync/DAM/JavaCryptoSocket/JavaMessenger/nbproject/build-impl.xml</file>
         </group>
     </open-files>
 </project-private>

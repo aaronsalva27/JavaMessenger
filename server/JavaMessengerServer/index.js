@@ -1,95 +1,61 @@
-const Client = require("./clients");
-const colors = require('colors/safe'); 
+var net = require("net");
+var util = require("util");
 
-var net = require('net');
-var HOST = '127.0.0.1'; // parameterize the IP of the Listen var PORT = 6969; // TCP LISTEN port
-var PORT = 6969; // TCP LISTEN port
+var currentPool = 1;
+var server = net.createServer();
 
-var clients = []
-var sockets = [];
+//add a new socket to the assigned pool stored on the listening server instance
+server.addToPool = function(s) {
+  if (!server.connPools) {
+    server.connPools = {};
+  }
 
+  if (!server.connPools[s.poolId]) {
+    server.connPools[s.poolId] = [];
+  }
 
-net.createServer ((sock) =>{
+  server.connPools[s.poolId].push(s);
 
-    console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
+  s.on("close", clientCloseHandler);
+  s.on("data", clientDataHandler);
+};
 
-    var newclient = new Client(sock.remoteAddress, sock.remotePort, sock, null)
-    clients[sock.id] = newclient;
-    
-    sock.on('data', (data)=> {
-        let message = JSON.parse(data.toString('utf8'))
-        let typeMsg = message.to;
-        switch (typeMsg){
-            case "SERVER":
-            if(message.data && message.data.length){
-                manageClient(message, sock)
-            }
-            sock.write('Echo server\r\n');
-            manageMessage(data,printMessage(message ,sock));
+//broadcast data from client to other clients in their pool
+function clientDataHandler(data) {
+  let message = JSON.parse(data.toString("utf8"));
+  console.log(message);
+  if (message.type == "ACTION") {
 
-            break;
-            case "chat1":
-            manageMessage(data,printMessage(message ,sock));
-            sock.write('Echo server\r\n');
-            break;
-
-        }
-    })
-
-    sock.on('close', function(data) {
-        console.log(data)
-        console.log('Connection closed');
-    });
-
-    sock.on("error", (err) => {
-        console.log("Caught flash policy server socket error: ")
-        console.log(err.stack)
-    });
-    
-}).listen(PORT, HOST);
-
-/////// Message Model ///////
-/*
-type [MESSAGE, ERROR , ACTION]
-owner
-data
-reciever?
-message
-ip
-port
-room?
-
-*/
-
-
-function manageMessage(data ,callback) {
-
-   // console.log(data.toString('utf8'))
-
-    if(callback) {
-        callback();
+    for (var a = 0; a < server.connPools[this.poolId].length; a++) {
+      server.connPools[this.poolId][a].write(data);
     }
-}
 
-/*Functions Utils*/
-function printMessage(data, sock){
-    console.log(colors.green(data.owner)+
-    " at: "+colors.red(sock.remoteAddress + ":" + sock.remotePort)+
-    " to: "+colors.rainbow(data.to)+
-    " data => "+colors.yellow(data.data))
-}
+  } else if (message.type == "MESSAGE") {
+    for (var a = 0; a < server.connPools[this.poolId].length; a++) {
+      server.connPools[this.poolId][a].write(data);
 
-/* Function Utils */
-function manageClient(data, sock){
-    switch(data.data){
-        case "chat1":
-        var client = clients[sock.id];
-        client.currentChat = data.data; // set the chat1 current room
-        console.log(colors.blue("[INFO]")+"client: "+data.owner+" changed to room: "+client.currentChat)
-        break;
     }
+  }
 }
 
+//remove client form pool on disconnect
+function clientCloseHandler() {
+  var tmp = null;
+  for (var a = 0; a < server.connPools[this.poolId].length; a++) {
+    if (this.remotePort === a.remotePort) {
+      tmp = a;
+      break;
+    }
+  }
+  server.connPools[this.poolId].splice(tmp, 1);
+}
 
+//add new client to pool
+function newClient(s) {
+  s.poolId = currentPool;
+  server.addToPool(s);
+}
 
-console.log('Server listening on ' + HOST +':'+ PORT);
+server.on("connection", newClient);
+
+server.listen(6969);

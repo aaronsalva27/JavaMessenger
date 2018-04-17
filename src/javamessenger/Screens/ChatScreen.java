@@ -21,22 +21,23 @@ import utils.SoketMessages;
  * @author aaron
  */
 public class ChatScreen extends javax.swing.JFrame {
+
     /**
      * Creates new form ChatScreen
      */
-    public ChatScreen() {
+    public ChatScreen(String room) {
         initComponents();
         System.out.println("Chat init");
-         // Set JFrame to the center of the screen
+        // Set JFrame to the center of the screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
         try {
             //informar server cambio de chat1 de este usuario
-            SocketFactory.getSocketUtil().setChat("chat1");
+            SocketFactory.getSocketUtil().setChat("room 1");
         } catch (IOException ex) {
             Logger.getLogger(ChatScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -54,6 +55,11 @@ public class ChatScreen extends javax.swing.JFrame {
         jScrollPane1.setViewportView(txtChat1);
 
         btnSend.setText("Enviar");
+        btnSend.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnSendMouseClicked(evt);
+            }
+        });
         btnSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSendActionPerformed(evt);
@@ -88,42 +94,45 @@ public class ChatScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
+ 
+    }//GEN-LAST:event_btnSendActionPerformed
+
+    private void btnSendMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSendMouseClicked
+        // TODO add your handling code here:
         JSONObject obj;
         String msg = tfMessage.getText();
-        try {          
-            obj = new Message(SocketFactory.getSocketUtil().getClient().getName(), 
-                    SocketFactory.getSocketUtil().getClient().getHost(), 
+        try {
+            obj = new Message(SocketFactory.getSocketUtil().getClient().getName(),
+                    SocketFactory.getSocketUtil().getClient().getHost(),
                     tfMessage.getText(),
                     Message.Type.MESSAGE,
                     SocketFactory.getSocketUtil().getClient().getHost(),
-                    LocalDateTime.now(), 
+                    LocalDateTime.now(),
                     "room 1").generateMessage();
-            
-            appendMsg("chat1", SocketFactory.getSocketUtil().getClient().getName(), msg);
+
+            appendMsg("room 1", SocketFactory.getSocketUtil().getClient().getName(), msg);
             tfMessage.setText("");
             SocketFactory.getSocketUtil().send(obj);
         } catch (IOException ex) {
-           System.out.println(SoketMessages.ERROR_SEND);
+            System.out.println(SoketMessages.ERROR_SEND);
         }
         
-        
-    }//GEN-LAST:event_btnSendActionPerformed
+    }//GEN-LAST:event_btnSendMouseClicked
 
-    private void appendMsg (String chat, String clientName, String msg){
-        
-        switch (chat){
-            case "chat1":
-                txtChat1.setText(txtChat1.getText()+"\n"+
-                "["+clientName+"]: "+msg);
+    private void appendMsg(String chat, String clientName, String msg) {
+
+        switch (chat) {
+            case "room 1":
+                txtChat1.setText(txtChat1.getText() + "\n"
+                        + "[" + clientName + "]: " + msg);
                 break;
             case "chat2":
-               System.out.println("manolo programa un poco");
+                System.out.println("manolo programa un poco");
                 break;
         }
-        
 
     }
-  
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSend;

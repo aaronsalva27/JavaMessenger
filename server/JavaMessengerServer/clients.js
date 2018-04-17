@@ -4,15 +4,15 @@ class Client {
         this.port = port ;
         this.name = name;
         this.socket = socket;
-        this.currentChat = chat;
+        this.room = chat;
     }
 
     toString() {
         return "Name:" + this.name + " - " + 
             "IP: "+ this.ip + " - " + 
             "PORT: " + this.port + " - " + 
-            "SOCKET ID: " + this.socket.id + " - " + 
-            "CHAT: " + this.chat 
+            "SOCKET: " + this.socket + " - " + 
+            "ROOM: " + this.room 
 
     }
 

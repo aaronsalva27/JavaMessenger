@@ -6,11 +6,17 @@
 package utils;
 
 import Models.Client;
+import Models.Message;
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javamessenger.Screens.MenuScreen;
+
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -29,6 +35,7 @@ public class ClientSocket {
     private boolean tryToReconnect = true;
     private boolean isExit = false;
     private Thread mainThread;
+    public MenuScreen delegate;
 
     public ClientSocket(Client c) throws IOException {
         this.c = c;
@@ -61,15 +68,19 @@ public class ClientSocket {
                 in = new BufferedReader(
                         new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
-
-            JSONObject obj = new JSONObject();
-             
-            obj.put("owner", c.getName());
-            obj.put("data", "connected");
-            obj.put("from", c.getHost().toString());
-            obj.put("to", "SERVER");                //To the chat group??
-
-                out.println(obj.toString());
+                JSONObject obj;
+                try {
+                    obj = new Message(SocketFactory.getSocketUtil().getClient().getName(),
+                            SocketFactory.getSocketUtil().getClient().getHost(),
+                            "connect",
+                            Message.Type.ACTION,
+                            SocketFactory.getSocketUtil().getClient().getHost(),
+                            LocalDateTime.now(),
+                            "").generateMessage();
+                    SocketFactory.getSocketUtil().send(obj);
+                } catch (IOException ex) {
+                    System.out.println(SoketMessages.ERROR_SEND);
+                }
 
                 if (in != null) {
                     System.out.println("[received] " + in.readLine() + "\n");
@@ -80,7 +91,7 @@ public class ClientSocket {
             }
         }
         tryToReconnect = true;
-        
+
     }
 
     public void listen() throws IOException {
@@ -90,6 +101,20 @@ public class ClientSocket {
                 while (socket.isConnected()) {
                     response = in.readLine();
                     System.out.println("[received]: " + response);
+                    String TEXT;
+                    JSONParser parser = new JSONParser();
+                    try {
+                        JSONObject json = (JSONObject) parser.parse(response);
+                        //TODO ENCRYPT
+                        String data = json.get("data").toString();
+                        String owner = json.get("owner").toString();
+                        
+                        this.delegate.appendMsg("room 1", owner, data);
+
+                    } catch (ParseException ex) {
+                        Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
                 }
             } catch (IOException ex) {
                 System.out.println("Socket disconected");
@@ -108,7 +133,7 @@ public class ClientSocket {
     }
 
     public <T> void send(T data) {
-        System.out.println("is Conected: "+ socket.isConnected());
+        System.out.println("send: " + data.toString());
         out.println(data);
     }
 
@@ -134,16 +159,26 @@ public class ClientSocket {
 
     /*Set the current chat, info to server*/
     public void setChat(String chat) {
-        JSONObject obj = new JSONObject();
-        obj.put("owner", c.getName());
-        obj.put("data", "chat1");
-        obj.put("from", c.getHost().toString());
-        obj.put("to", "SERVER");
-         try {
+
+        try {
+            JSONObject obj = new JSONObject();
+            obj = new Message(SocketFactory.getSocketUtil().getClient().getName(),
+                    SocketFactory.getSocketUtil().getClient().getHost(),
+                    "joined room 1",
+                    Message.Type.ACTION,
+                    SocketFactory.getSocketUtil().getClient().getHost(),
+                    LocalDateTime.now(),
+                    "room 1").generateMessage();
+
             SocketFactory.getSocketUtil().send(obj);
+
         } catch (IOException ex) {
-           System.out.println(SoketMessages.ERROR_SEND);
+            Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void setInstance(MenuScreen Screen) {
+        this.delegate = Screen;
     }
 
 }
