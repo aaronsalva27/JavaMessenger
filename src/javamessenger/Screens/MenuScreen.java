@@ -5,12 +5,17 @@
  */
 package javamessenger.Screens;
 
+import JCE.FirmaDigital;
+import static JCE.FirmaDigital.randomGenerate;
+import static JCE.FirmaDigital.signData;
+import static JCE.FirmaDigital.validateSignature;
 import JCE.SimetricCrypter;
 import Models.Client;
 import Models.Message;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.security.KeyPair;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.logging.Level;
@@ -245,9 +250,18 @@ public class MenuScreen extends javax.swing.JFrame {
 
             tfMessage.setText("");
             
+            // Simetric
             SecretKey sk = SimetricCrypter.hashBuildKey("davrami");
             byte[] textEncp = SimetricCrypter.encrypt(sk, msg);
             byte[] textDecypt = SimetricCrypter.decrypt(sk, textEncp); 
+            
+            // Digital signature
+            KeyPair keys = FirmaDigital.randomGenerate(2048);
+            byte[] signedData = FirmaDigital.signData(msg.getBytes(), keys.getPrivate());
+            boolean isValid = FirmaDigital.validateSignature(msg.getBytes(), signedData, keys.getPublic());
+        
+            System.out.println(isValid);
+            
             
             // SocketFactory.getSocketUtil().send(obj);
             
