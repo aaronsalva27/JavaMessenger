@@ -253,7 +253,7 @@ public class MenuScreen extends javax.swing.JFrame {
             // Simetric
             SecretKey sk = SimetricCrypter.hashBuildKey("davrami");
             byte[] textEncp = SimetricCrypter.encrypt(sk, msg);
-            byte[] textDecypt = SimetricCrypter.decrypt(sk, textEncp); 
+
             
             // Digital signature
             KeyPair keys = FirmaDigital.randomGenerate(2048);
@@ -261,7 +261,6 @@ public class MenuScreen extends javax.swing.JFrame {
             boolean isValid = FirmaDigital.validateSignature(msg.getBytes(), signedData, keys.getPublic());
             System.out.println(isValid);
             
-            //Base64.getEncoder().encodeToString(keys.getPublic())
             
             obj.put("key", "davrami");
             obj.put("data_encrypted", Base64.getEncoder().encodeToString(textEncp));
