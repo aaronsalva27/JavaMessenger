@@ -5,12 +5,17 @@
  */
 package javamessenger.Screens;
 
+import JCE.SimetricCrypter;
 import Models.Client;
+import Models.Message;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.SecretKey;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import utils.ClientSocket;
@@ -44,6 +49,30 @@ public class MenuScreen extends javax.swing.JFrame {
     public void setUpConexion(Client c) throws IOException {
         sf.getSocketUtil().connect();
         sf.getSocketUtil().listen();
+        sf.getSocketUtil().setInstance(this);
+        
+        try {
+            //informar server cambio de chat1 de este usuario
+            SocketFactory.getSocketUtil().setChat("room 1");
+        } catch (IOException ex) {
+            Logger.getLogger(ChatScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }
+    
+    public void appendMsg(String chat, String clientName, String msg) {
+
+        switch (chat) {
+            case "room 1":
+                txtChat1.setText(txtChat1.getText() + "\n"
+                        + "[" + clientName + "]: " + msg);
+                break;
+            case "room 2":
+                System.out.println("manolo programa un poco");
+                break;
+        }
+
     }
     
     
@@ -57,7 +86,10 @@ public class MenuScreen extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtChat1 = new javax.swing.JTextPane();
+        tfMessage = new javax.swing.JTextField();
+        btnSend = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -84,7 +116,7 @@ public class MenuScreen extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 542, Short.MAX_VALUE)
                 .addComponent(lbName)
                 .addContainerGap())
         );
@@ -121,13 +153,21 @@ public class MenuScreen extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 309, Short.MAX_VALUE))
+                .addGap(0, 339, Short.MAX_VALUE))
         );
 
-        jButton1.setText("Nueva Sala");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        txtChat1.setEditable(false);
+        jScrollPane2.setViewportView(txtChat1);
+
+        btnSend.setText("Enviar");
+        btnSend.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnSendMouseClicked(evt);
+            }
+        });
+        btnSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnSendActionPerformed(evt);
             }
         });
 
@@ -137,17 +177,30 @@ public class MenuScreen extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(94, 94, 94)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(123, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                    .addContainerGap(199, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(tfMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 538, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 627, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(79, 79, 79)))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(78, 78, 78)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 496, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(btnSend, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                        .addComponent(tfMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE))
+                    .addContainerGap()))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -177,18 +230,49 @@ public class MenuScreen extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        new ChatScreen().setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnSendMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSendMouseClicked
+
+        JSONObject obj;
+        String msg = tfMessage.getText();
+        try {
+            obj = new Message(SocketFactory.getSocketUtil().getClient().getName(),
+                    SocketFactory.getSocketUtil().getClient().getHost(),
+                    tfMessage.getText(),
+                    Message.Type.MESSAGE,
+                    SocketFactory.getSocketUtil().getClient().getHost(),
+                    LocalDateTime.now(),
+                    "room 1").generateMessage();
+
+            tfMessage.setText("");
+            
+            SecretKey sk = SimetricCrypter.hashBuildKey("davrami");
+            byte[] textEncp = SimetricCrypter.encrypt(sk, msg);
+            byte[] textDecypt = SimetricCrypter.decrypt(sk, textEncp); 
+            
+            // SocketFactory.getSocketUtil().send(obj);
+            
+        } catch (IOException ex) {
+            System.out.println(SoketMessages.ERROR_SEND);
+        }
+        
+
+    }//GEN-LAST:event_btnSendMouseClicked
+
+    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
+
+    }//GEN-LAST:event_btnSendActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnSend;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbName;
+    private javax.swing.JTextField tfMessage;
+    private javax.swing.JTextPane txtChat1;
     // End of variables declaration//GEN-END:variables
 }
