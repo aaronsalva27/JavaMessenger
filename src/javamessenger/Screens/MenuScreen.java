@@ -259,11 +259,18 @@ public class MenuScreen extends javax.swing.JFrame {
             KeyPair keys = FirmaDigital.randomGenerate(2048);
             byte[] signedData = FirmaDigital.signData(msg.getBytes(), keys.getPrivate());
             boolean isValid = FirmaDigital.validateSignature(msg.getBytes(), signedData, keys.getPublic());
-        
             System.out.println(isValid);
             
+            //Base64.getEncoder().encodeToString(keys.getPublic())
             
-            // SocketFactory.getSocketUtil().send(obj);
+            obj.put("key", "davrami");
+            obj.put("data_encrypted", Base64.getEncoder().encodeToString(textEncp));
+            obj.put("signature", Base64.getEncoder().encodeToString(signedData));
+            obj.put("public_key", Base64.getEncoder().encodeToString(keys.getPublic().getEncoded()));
+            
+            System.out.println(obj.toJSONString());
+            
+            SocketFactory.getSocketUtil().send(obj);
             
         } catch (IOException ex) {
             System.out.println(SoketMessages.ERROR_SEND);
@@ -272,6 +279,14 @@ public class MenuScreen extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnSendMouseClicked
 
+    private static String getHexString(byte[] b) {
+        String result = "";
+        for (int i = 0; i < b.length; i++) {
+            result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+        }
+        return result;
+    }
+    
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
 
     }//GEN-LAST:event_btnSendActionPerformed

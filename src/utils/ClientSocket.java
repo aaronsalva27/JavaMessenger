@@ -5,14 +5,23 @@
  */
 package utils;
 
+import JCE.FirmaDigital;
+import JCE.SimetricCrypter;
 import Models.Client;
 import Models.Message;
 import java.io.*;
 import java.net.*;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javamessenger.Screens.MenuScreen;
+import javax.crypto.SecretKey;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -84,6 +93,7 @@ public class ClientSocket {
 
                 if (in != null) {
                     System.out.println("[received] " + in.readLine() + "\n");
+                    
                 }
 
             } catch (IOException ex) {
@@ -109,9 +119,37 @@ public class ClientSocket {
                         String data = json.get("data").toString();
                         String owner = json.get("owner").toString();
                         
+                        
+                        if(json.containsKey("public_key")) {
+                            String public_key = json.get("public_key").toString();
+                            String simetric_key = json.get("key").toString();
+                            byte [] data_encrypted  = Base64.getDecoder().decode(json.get("data_encrypted").toString());
+                            byte [] signature = Base64.getDecoder().decode(json.get("signature").toString());
+                            
+                            byte[] key =  Base64.getDecoder().decode(public_key);
+                            
+                            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(key));
+                            
+                            // System.out.println(publicKey);
+                            SecretKey sk = SimetricCrypter.hashBuildKey(simetric_key);
+                            byte[] textDecypt = SimetricCrypter.decrypt(sk, data_encrypted);
+                            
+                            if(FirmaDigital.validateSignature(textDecypt, signature, publicKey)) {
+                                System.out.println("Firma valida");
+                                data = new String(textDecypt);
+                            }
+   
+                        }
+                        
+                        
                         this.delegate.appendMsg("room 1", owner, data);
 
                     } catch (ParseException ex) {
+                        Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (NoSuchAlgorithmException ex) {
+                        Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InvalidKeySpecException ex) {
                         Logger.getLogger(ClientSocket.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
