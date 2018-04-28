@@ -2,6 +2,17 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/utils/NameGenerator.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/javamessenger/Screens/MenuScreen.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/javamessenger/JavaMessenger.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/Models/Message.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/javamessenger/Screens/ChatScreen.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/utils/SocketFactory.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/utils/SoketMessages.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/utils/ClientSocket.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/Models/Client.java</file>
+            <file>file:/C:/Users/aaron/Documents/NetBeansProjects/JavaMessenger/src/javamessenger/Screens/LoginScreen.java</file>
+        </group>
     </open-files>
 </project-private>
